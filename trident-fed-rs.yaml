@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: trident-demo
+  annotations:
+    federation.kubernetes.io/replica-set-preferences: |
+        {
+            "rebalance": true,
+            "clusters": {
+                "trident-sap": {
+                    "minReplicas": 2,
+                    "maxReplicas": 40,
+                    "weight": 10
+                },
+                "trident-gke": {
+                    "minReplicas": 0,
+                    "maxReplicas": 40,
+                    "weight": 1
+                }
+            }
+        }
+spec:
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: trident-demo
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.10
+          resources:
+            requests:
+              cpu: 250m
+              memory: 250Mi
